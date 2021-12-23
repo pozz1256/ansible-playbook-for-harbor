@@ -1,0 +1,61 @@
+---
+# tasks file for harbor-install
+  - name: Update system
+    apt: 
+      update_cache: true
+      cache_valid_time: 3600
+      force_apt_get: true
+
+  - name: Get IP
+    debug: var=ansible_all_ipv4_addresses    
+
+  - name: Install needed packages 
+    apt:
+      pkg: 
+      - curl
+      - apt-transport-https
+      - ca-certificates
+      - software-properties-common
+      - docker-compose
+
+  - name: Curl and add key to deb repository
+    shell: |
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+  - name: Update system
+    apt:
+      update_cache: true
+      cache_valid_time: 3600
+      force_apt_get: true
+      
+  - name: Install docker-ce-cli
+    shell: |
+      apt -y install docker-ce docker-ce-cli containerd.io
+
+
+  - name: Download harber repository
+    get_url: 
+      url: https://github.com/goharbor/harbor/releases/download/v2.3.4/harbor-offline-installer-v2.3.4.tgz
+      dest: /home/vagrant
+
+  - name: Extract harbor-offline-installer
+    ansible.builtin.unarchive:
+      src: /home/vagrant/harbor-offline-installer-v2.3.4.tgz
+      dest: /home/vagrant
+      remote_src: yes
+
+
+  - name: Copy a new harbor.yml instead of local
+    copy:
+      src: harbor.yml
+      dest: /home/vagrant/harbor
+
+
+  - name: Final Installation
+    shell: |
+      cd harbor
+      sudo ./install.sh --with-trivy
+    register: results
+  - debug:
+      var: results.stdout      

@@ -1,0 +1,5 @@
+- name: Habor ansible playbook
+  hosts: HARBOR
+  become: yes
+  roles:
+    - harbor-install   

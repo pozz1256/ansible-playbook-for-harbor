@@ -1,0 +1,4 @@
+---
+# defaults file for harbor-install
+#source_folder: "~/ansible/files/harbor.yml"
+destin_folder: "/home/vagrant/harbor"

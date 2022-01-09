@@ -47,7 +47,7 @@
 
 
   - name: Copy a new harbor.yml instead of local
-    copy:
+    template:
       src: harbor.yml
       dest: /home/vagrant/harbor
 
